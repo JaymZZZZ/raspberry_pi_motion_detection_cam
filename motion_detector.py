@@ -190,7 +190,7 @@ class MotionDetector:
                             f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
                         self.__write_recording_to_file()
                     else:
-                        if self.__is_max_time_since_last_motion_detection_exceeded() and not self.__no_save:
+                        if self.__is_max_time_since_last_motion_detection_exceeded():
                             if not self.__no_save:
                                 self.log_info("Max time since last motion detection exceeded")
                                 self.__write_recording_to_file()
@@ -220,9 +220,15 @@ class MotionDetector:
         )
 
     def __is_max_time_since_last_motion_detection_exceeded(self):
-        return self.__encoding and self.__time_of_last_motion_detection is not None and \
-            ((
+        if not self.__no_save:
+            return self.__encoding and self.__time_of_last_motion_detection is not None and \
+                ((
                      datetime.datetime.now() - self.__time_of_last_motion_detection).total_seconds() > self.__MAX_TIME_SINCE_LAST_MOTION_DETECTION_SECONDS)
+
+        else:
+            return self.__time_of_last_motion_detection is not None and \
+                ((
+                         datetime.datetime.now() - self.__time_of_last_motion_detection).total_seconds() > self.__MAX_TIME_SINCE_LAST_MOTION_DETECTION_SECONDS)
 
     def __start_recording(self):
         self.__encoder.output.fileoutput = self.__get_recording_file_path()
