@@ -220,6 +220,7 @@ class MotionDetector:
         request.release()
 
     def __write_snapshot_to_file(self):
+        file_path = self.__get_snapshot_file_path()
         self.log_info(f"Writing snapshot file: {file_path}")
         self.__create_snapshot()
 
