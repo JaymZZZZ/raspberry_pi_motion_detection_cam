@@ -33,37 +33,40 @@ def command_line_handler(signum, frame):
 def parse_command_line_arguments():
     parser = argparse.ArgumentParser(
         description='Motion detection for Raspberry Pi Camera Module 2 with optional E-Mail send.')
-    parser.add_argument('--preview', help='enables the preview window', required=False, action='store_true')
+    parser.add_argument('--preview', help='Enables the preview window', required=False, action='store_true')
     parser.add_argument('--preview-x', type=int, default=100,
-                        help='preview window location x-axis')
+                        help='Preview window location x-axis')
     parser.add_argument('--preview-y', type=int, default=200,
-                        help='preview window location y-axis')
+                        help='Preview window location y-axis')
     parser.add_argument('--preview-width', type=int, default=800,
-                        help='preview window width')
+                        help='Preview window width')
     parser.add_argument('--preview-height', type=int, default=600,
-                        help='preview window height')
+                        help='Preview window height')
     parser.add_argument('--zoom', type=float, default=1.0,
                         help='zoom factor (0.5 is half of the resolution and therefore the zoom is x 2)',
                         required=False)
-    parser.add_argument('--width', type=int, default=1280, help='camera resolution width for high resolution',
+    parser.add_argument('--width', type=int, default=1280, help='Camera resolution width for high resolution',
                         required=False)
-    parser.add_argument('--height', type=int, default=720, help='camera resolution height for high resolution',
+    parser.add_argument('--height', type=int, default=720, help='Camera resolution height for high resolution',
                         required=False)
-    parser.add_argument('--lores-width', type=int, default=320, help='camera resolution width for low resolution',
+    parser.add_argument('--lores-width', type=int, default=320, help='Camera resolution width for low resolution',
                         required=False)
-    parser.add_argument('--lores-height', type=int, default=240, help='camera resolution height for low resolution',
+    parser.add_argument('--lores-height', type=int, default=240, help='Camera resolution height for low resolution',
                         required=False)
     parser.add_argument('--min-pixel-diff', type=float, default=7.2,
-                        help='minimum number of pixel changes to detect motion (determined with numpy by calculating the mean of the squared pixel difference between two frames)',
+                        help='Minimum number of pixel changes to detect motion (determined with numpy by calculating the mean of the squared pixel difference between two frames)',
                         required=False)
     parser.add_argument('--capture-lores', help='enables capture of lores buffer', action='store_true')
     parser.add_argument('--recording-dir', default='./recordings/', help='directory to store recordings',
                         required=False)
     parser.add_argument('--delete-local-recordings',
-                        help='delete local recordings',
+                        help='Delete local recordings after email is sent',
+                        required=False, action='store_true')
+    parser.add_argument('--snapshot_only',
+                        help='Sends an email with just an image snapshot and not the whole video',
                         required=False, action='store_true')
     parser.add_argument('--max-recording-length-seconds', type=int, default=0,
-                        help='limit recording length to seconds')
+                        help='Limit recording length to seconds')
     parser.add_argument('--recipient', type=str, help='Email address to send the recordings to', required=False)
     parser.add_argument('--email-username', type=str, help='Email account username (from)', required=False)
     parser.add_argument('--email-password', type=str, help='Password of the email account to send the recordings',
@@ -71,7 +74,7 @@ def parse_command_line_arguments():
     parser.add_argument('--smtp-server', type=str, default='smtp.gmail.com', help='SMTP Server', required=False)
     parser.add_argument('--smtp-port', type=int, default=465, help='SMTP Port', required=False)
     parser.add_argument('--debug',
-                        help='enables debug mode',
+                        help='Enables debug mode',
                         required=False, action='store_true')
 
     return parser.parse_args()
@@ -102,6 +105,7 @@ class MotionDetector:
 
         self.__recording_dir = args.recording_dir
         self.__delete_local_recordings = args.delete_local_recordings
+        self.__snapshot_only = args.snapshot_only
         self.__preview_x = args.preview_x
         self.__preview_y = args.preview_y
         self.__preview_width = args.preview_width
@@ -197,16 +201,33 @@ class MotionDetector:
         self.__encoding = True
 
     def __write_recording_to_file(self):
-        file_path = self.__get_recording_file_path()
+        if self.snapshot_only:
+            self.__write_snapshot_to_file()
+        else:
+            file_path = self.__get_recording_file_path()
+            self.log_info(f"Writing file {file_path}")
+            self.__encoder.output.stop()
+            _, file_name = os.path.split(file_path)
+            self.__upload_file(file_path=file_path)
+            self.__encoding = False
+            self.__start_time_of_last_recording = None
+
+    def __create_snapshot(self):
+        request = self.__picam2.capture_request()
+        request.save("main", self.__get_snapshot_file_path())
+        request.release()
+
+    def __write_snapshot_to_file(self):
+        file_path = self.__get_snapshot_file_path()
         self.log_info(f"Writing file {file_path}")
-        self.__encoder.output.stop()
         _, file_name = os.path.split(file_path)
         self.__upload_file(file_path=file_path)
-        self.__encoding = False
-        self.__start_time_of_last_recording = None
 
     def __get_recording_file_path(self):
         return f"{self.__recording_dir}{self.__start_time_of_last_recording.isoformat()}.h264"
+
+    def __get_snapshot_file_path(self):
+        return f"{self.__recording_dir}{self.__start_time_of_last_recording.isoformat()}.jpeg"
 
     def __set_up_camera(self, enable_preview):
         """
@@ -245,7 +266,7 @@ class MotionDetector:
         :param file_path: file to delete
         """
         if self.__delete_local_recordings:
-            self.log_info(f"Deleting local recording {file_path}")
+            self.log_info(f"Deleting local file: {file_path}")
             os.remove(file_path)
 
     def __send_email(self, file_path):
