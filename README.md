@@ -28,7 +28,7 @@ sudo apt-get install -y python3-picamera2
 ### 2) Run the application
 
 ~~~
-python3 main.py
+python3 motion_detector.py
 ~~~
 
 ## Start on boot
@@ -58,7 +58,7 @@ Exec=sh -c 'sleep 10 && /usr/bin/python3 /path/to/motion_detector.py arguments..
 Shows a preview window of what the camera sees.
 
 ~~~
-python3 main.py --preview
+python3 motion_detector.py --preview
 ~~~
 
 ### Zoom camera (software-based)
@@ -66,7 +66,7 @@ python3 main.py --preview
 Example of a x2 zoom:
 
 ~~~
-python3 main.py --zoom 0.5
+python3 motion_detector.py --zoom 0.5
 ~~~
 
 ### Motion detection sensitivity
@@ -76,7 +76,7 @@ If you want the motion detection to be more or less sensitive, you can adjust it
 The lower, the more sensitive.
 
 ~~~
-python3 main.py --min-pixel-diff 5.2
+python3 motion_detector.py --min-pixel-diff 5.2
 ~~~
 
 ### Email transmission of recordings
@@ -84,7 +84,7 @@ python3 main.py --min-pixel-diff 5.2
 Sends videos to a specified email.
 
 ~~~
-python3 main.py --email-username USERNAME --email-password PASSWORD --recipient TO_EMAIL
+python3 motion_detector.py --email-username USERNAME --email-password PASSWORD --recipient TO_EMAIL
 ~~~
 
 ### Delete local recordings (after sending them via email)
@@ -92,7 +92,7 @@ python3 main.py --email-username USERNAME --email-password PASSWORD --recipient 
 Deletes the local video after sending them to the recipient email.
 
 ~~~
-python3 main.py --delete-local-recordings
+python3 motion_detector.py --delete-local-recordings
 ~~~
 
 ## Limit bandwidth
