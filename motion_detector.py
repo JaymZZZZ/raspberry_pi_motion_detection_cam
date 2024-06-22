@@ -356,7 +356,10 @@ class MotionDetector:
             for key, value in self.__diff_history:
                 if 1 <= key <= self.__diff_history_count - 1:
                     new_diff_history.append(value)
-            self.__diff_history = new_diff_history
+            self.__diff_history.clear()
+            for value in new_diff_history:
+                self.__diff_history.append(value)
+            new_diff_history.clear()
         else:
             self.__diff_history.append(diff)
         self.display_diff_stats()
