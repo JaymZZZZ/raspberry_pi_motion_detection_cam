@@ -94,11 +94,11 @@ class MotionDetector:
         self.__encoding = False
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
-        self.__display_interval = 10
+        self.__display_interval = 30
         self.__tick = 0
 
         self.__diff_history = []
-        self.__diff_history_count = 100
+        self.__diff_history_count = 1000
         self.__diff_min = 9999
         self.__diff_max = 0
         self.__diff_average = 0
@@ -343,6 +343,8 @@ class MotionDetector:
 
     def display_diff_stats(self):
         diff_sum = 0
+        self.__diff_min = 0
+        self.__diff_max = 0
         for value in self.__diff_history:
             if value < self.__diff_min:
                 self.__diff_min = value
