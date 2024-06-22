@@ -62,7 +62,7 @@ def parse_command_line_arguments():
     parser.add_argument('--delete-local-recordings',
                         help='Delete local recordings after email is sent',
                         required=False, action='store_true')
-    parser.add_argument('--snapshot_only',
+    parser.add_argument('--snapshot-only',
                         help='Sends an email with just an image snapshot and not the whole video',
                         required=False, action='store_true')
     parser.add_argument('--max-recording-length-seconds', type=int, default=0,
