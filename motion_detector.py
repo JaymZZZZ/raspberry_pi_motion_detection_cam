@@ -423,7 +423,7 @@ class MotionDetector:
                 events_last_hour += 1
             if time > (time.time() - 24 * 60 * 60):
                 events_last_day += 1
-        self.events_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
+        self.events_at_interval(f"Event Stats - (10 Min / 1 Hour / 1 Day) : {events_last_10_min} | {events_last_hour} | {events_last_day}")
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
