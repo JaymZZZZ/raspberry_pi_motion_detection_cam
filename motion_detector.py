@@ -201,16 +201,18 @@ class MotionDetector:
         self.__encoding = True
 
     def __write_recording_to_file(self):
-        if self.snapshot_only:
-            self.__write_snapshot_to_file()
+        self.__write_snapshot_to_file()
+        file_path = self.__get_recording_file_path()
+        snapshot_path = self.__get_snapshot_file_path()
+        self.log_info(f"Writing file: {file_path}")
+        self.__encoder.output.stop()
+        _, file_name = os.path.split(file_path)
+        if self.__snapshot_only:
+            self.__upload_file(file_path=snapshot_path)
         else:
-            file_path = self.__get_recording_file_path()
-            self.log_info(f"Writing file {file_path}")
-            self.__encoder.output.stop()
-            _, file_name = os.path.split(file_path)
             self.__upload_file(file_path=file_path)
-            self.__encoding = False
-            self.__start_time_of_last_recording = None
+        self.__encoding = False
+        self.__start_time_of_last_recording = None
 
     def __create_snapshot(self):
         request = self.__picam2.capture_request()
@@ -219,9 +221,7 @@ class MotionDetector:
 
     def __write_snapshot_to_file(self):
         file_path = self.__get_snapshot_file_path()
-        self.log_info(f"Writing file {file_path}")
-        _, file_name = os.path.split(file_path)
-        self.__upload_file(file_path=file_path)
+        self.log_info(f"Writing snapshot file: {file_path}")
 
     def __get_recording_file_path(self):
         return f"{self.__recording_dir}{self.__start_time_of_last_recording.isoformat()}.h264"
