@@ -68,7 +68,7 @@ def parse_command_line_arguments():
     parser.add_argument('--smtp-port', type=int, default=465, help='SMTP Port', required=False)
     parser.add_argument('--debug',
                         help='enables debug mode',
-                        required=False, action='debug_true')
+                        required=False, action='store_true')
 
     return parser.parse_args()
 
@@ -123,7 +123,7 @@ class MotionDetector:
         Starts the camera and runs the loop.
         """
         self.__picam2.start()
-        self.__picam2.start_encoder()
+        self.__picam2.start_encoder(self.__encoder)
 
         self.__set_zoom_factor()
 
