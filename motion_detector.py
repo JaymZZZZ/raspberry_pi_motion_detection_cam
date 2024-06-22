@@ -49,6 +49,12 @@ def parse_command_line_arguments():
     parser.add_argument('--zoom', type=float, default=1.0,
                         help='zoom factor (0.5 is half of the resolution and therefore the zoom is x 2)',
                         required=False)
+    parser.add_argument('--gain', type=float, default=1.0,
+                        help='Analog Gain',
+                        required=False)
+    parser.add_argument('--exposure-time', type=float, default=33000.0,
+                        help='Exposure time in milliseconds',
+                        required=False)
     parser.add_argument('--width', type=int, default=1280, help='Camera resolution width for high resolution',
                         required=False)
     parser.add_argument('--height', type=int, default=720, help='Camera resolution height for high resolution',
@@ -114,6 +120,8 @@ class MotionDetector:
         self.__height = args.height
         self.__min_pixel_diff = args.min_pixel_diff
         self.__capture_lores = args.capture_lores
+        self.__gain = args.gain
+        self.__exposure_time = args.exposure_time
 
         self.__recording_dir = args.recording_dir
         self.__delete_local_recordings = args.delete_local_recordings
@@ -257,8 +265,8 @@ class MotionDetector:
         self.__picam2.configure(video_config)
 
         ctrls = Controls(self.__picam2)
-        ctrls.AnalogueGain = 0.0
-        ctrls.ExposureTime = 33192
+        ctrls.AnalogueGain = self.__gain
+        ctrls.ExposureTime = self.__exposure_time
         self.__picam2.set_controls(ctrls)
         self.__picam2.set_controls({"AwbEnable": 0})
 
