@@ -116,6 +116,8 @@ class MotionDetector:
         self.__diff_max = 0
         self.__diff_average = 0
 
+        self.__motion_events = deque()
+
         self.__zoom_factor = args.zoom
         self.__lores_width = args.lores_width
         self.__lores_height = args.lores_height
@@ -187,6 +189,7 @@ class MotionDetector:
                                 self.__encoding = True
                         self.__time_of_last_motion_detection = datetime.datetime.now()
                         self.log_movement_start(f"Motion Detected - Diff: {hist_diff}")
+                        self.__motion_events.appendleft(self.__time_of_last_motion_detection)
                     elif self.__is_max_recording_length_exceeded() and not self.__no_save:
                         self.log_info(
                             f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
@@ -394,11 +397,27 @@ class MotionDetector:
         self.__diff_average = diff_sum / len(self.__diff_history)
         self.log_at_interval(f"Diff Stats ({iterations} iterations): NEWEST: {diff} | OLDEST: {diff_last} | AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
 
+    def display_motion_event_stats(self):
+
+        events_last_10_min = 0
+        events_last_hour = 0
+        events_last_day = 0
+
+        for time in self.__motion_events:
+            if time > datetime.timedelta(minutes=10):
+                events_last_10_min += 1
+            if time > datetime.timedelta(hours=1):
+                events_last_hour += 1
+            if time > datetime.timedelta(hours=24):
+                events_last_day += 1
+        self.log_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
+
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
             self.__diff_history.pop()
         self.__diff_history.appendleft(diff)
         self.display_diff_stats(diff)
+        self.display_motion_event_stats()
 
 
 if __name__ == "__main__":
