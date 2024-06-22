@@ -355,7 +355,7 @@ class MotionDetector:
         diff_last = 0
         self.__diff_min = 9999
         self.__diff_max = 0
-        for value in self.__diff_history:
+        for value in range(self.__diff_history):
             if value < self.__diff_min:
                 self.__diff_min = value
             if value > self.__diff_max:
@@ -371,13 +371,13 @@ class MotionDetector:
         if len(self.__diff_history) >= self.__diff_history_count:
             new_diff_history = deque()
             pos = 0
-            for value in self.__diff_history:
+            for value in range(self.__diff_history):
                 if 1 <= pos <= self.__diff_history_count - 1:
                     new_diff_history.extendleft(value)
                 pos += 1
+            new_diff_history.extendleft(diff)
             self.__diff_history.clear()
-            for value in new_diff_history:
-                self.__diff_history.extendleft(value)
+            self.__diff_history.extendleft(range(new_diff_history))
             new_diff_history.clear()
         else:
             self.__diff_history.extendleft(diff)
