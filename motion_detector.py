@@ -350,7 +350,7 @@ class MotionDetector:
 
     def display_diff_stats(self):
         diff_sum = 0
-        self.__diff_min = 0
+        self.__diff_min = 9999
         self.__diff_max = 0
         for value in self.__diff_history:
             if value < self.__diff_min:
