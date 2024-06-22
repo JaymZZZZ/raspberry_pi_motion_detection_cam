@@ -49,7 +49,7 @@ def parse_command_line_arguments():
     parser.add_argument('--zoom', type=float, default=1.0,
                         help='zoom factor (0.5 is half of the resolution and therefore the zoom is x 2)',
                         required=False)
-    parser.add_argument('--gain', type=float, default=1.0,
+    parser.add_argument('--gain', type=float, default=0.0,
                         help='Analog Gain',
                         required=False)
     parser.add_argument('--exposure-time', type=int, default=33000,
