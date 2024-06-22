@@ -331,9 +331,12 @@ class MotionDetector:
     def log_error(self, message):
         logging.error(f"{Fore.RED} {message} {Style.RESET_ALL}")
 
+    def log_debug_as_info(self, message):
+        logging.info(f"{Fore.LIGHTBLUE_EX} {message} {Style.RESET_ALL}")
+
     def log_at_interval(self, message):
         if self.__tick == self.__display_interval:
-                self.log_info(message)
+                self.log_debug_as_info(message)
                 self.__tick = 0
         else:
             self.__tick += 1
