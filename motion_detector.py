@@ -118,6 +118,8 @@ class MotionDetector:
 
         if self.__debug_mode:
             logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.INFO)
 
         """
         Starts the camera and runs the loop.
@@ -285,7 +287,6 @@ class MotionDetector:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     command_line_arguments = parse_command_line_arguments()
     motion_detector = MotionDetector(command_line_arguments)
     signal.signal(signal.SIGINT, command_line_handler)
