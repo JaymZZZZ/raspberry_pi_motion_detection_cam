@@ -368,7 +368,7 @@ class MotionDetector:
     def log_movement_start(self, message):
         logging.info(f"{Back.RED} {message} {Style.RESET_ALL}")
     def log_movement_end(self, message):
-        logging.info(f"{Back.GREEN} {message} {Style.RESET_ALL}")
+        logging.info(f"{Back.GREEN}{Fore.BLACK} {message} {Style.RESET_ALL}")
 
     def log_at_interval(self, message):
         if self.__tick == self.__display_interval:
