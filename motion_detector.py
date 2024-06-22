@@ -94,6 +94,8 @@ class MotionDetector:
         self.__encoding = False
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
+        self.__display_interval = 10
+        self.__tick = 0
 
         self.__zoom_factor = args.zoom
         self.__lores_width = args.lores_width
@@ -152,7 +154,7 @@ class MotionDetector:
                 current_frame = current_frame[:w * h].reshape(h, w)
                 if previous_frame is not None:
                     hist_diff = self.__calculate_histogram_difference(current_frame, previous_frame)
-                    self.log_debug(f"Last Diff: {hist_diff}")
+                    self.log_at_interval(f"Last Diff: {hist_diff}")
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
                         if not self.__encoding:
                             self.__start_time_of_last_recording = datetime.datetime.now()
@@ -322,6 +324,13 @@ class MotionDetector:
 
     def log_error(self, message):
         logging.error(f"{Fore.RED} {message} {Style.RESET_ALL}")
+
+    def log_at_interval(self, message):
+        if self.__tick == self.__display_interval:
+                self.log_info(message)
+                self.__tick = 0
+        else:
+            self.__tick += 1
 
 
 if __name__ == "__main__":
