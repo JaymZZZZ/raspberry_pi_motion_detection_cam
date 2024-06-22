@@ -21,6 +21,8 @@ from colorama import init as colorama_init, Back
 from colorama import Fore
 from colorama import Style
 
+from collections import deque
+
 # setLevel(logging.WARNING) seems to have no impact
 logging.getLogger("picamera2").disabled = True
 
@@ -98,7 +100,7 @@ class MotionDetector:
         self.__display_interval = 100
         self.__tick = 0
 
-        self.__diff_history = []
+        self.__diff_history = deque()
         self.__diff_history_count = 1000
         self.__diff_min = 9999
         self.__diff_max = 0
@@ -367,18 +369,18 @@ class MotionDetector:
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
-            new_diff_history = [diff]
+            new_diff_history = deque()
             pos = 0
             for value in self.__diff_history:
                 if 1 <= pos <= self.__diff_history_count - 1:
-                    new_diff_history.append(value)
+                    new_diff_history.extendleft(value)
                 pos += 1
             self.__diff_history.clear()
             for value in new_diff_history:
-                self.__diff_history.append(value)
+                self.__diff_history.extendleft(value)
             new_diff_history.clear()
         else:
-            self.__diff_history.append(diff)
+            self.__diff_history.extendleft(diff)
         self.display_diff_stats(diff)
 
 
