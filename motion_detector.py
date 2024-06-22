@@ -239,12 +239,12 @@ class MotionDetector:
         self.__lsize = (self.__lores_width, self.__lores_height)
         self.__picam2 = Picamera2()
         video_config = self.__picam2.create_video_configuration(
-            main={"size": (self.__width, self.__height), "format": "YUV420"},
+            main={"size": (self.__width, self.__height), "format": "RGB888"},
             lores={"size": self.__lsize, "format": "YUV420"})
         self.__picam2.configure(video_config)
 
         if enable_preview:
-            self.__picam2.start_preview(Preview.QTGL, x=self.__preview_x, y=self.__preview_y,
+            self.__picam2.start_preview(Preview.QT, x=self.__preview_x, y=self.__preview_y,
                                         width=self.__preview_width, height=self.__preview_height)
 
         self.__encoder = H264Encoder(1000000, repeat=True)
