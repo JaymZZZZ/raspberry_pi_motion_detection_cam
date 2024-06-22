@@ -178,10 +178,11 @@ class MotionDetector:
                     hist_diff = self.__calculate_histogram_difference(current_frame, previous_frame)
                     self.store_diff_history(hist_diff)
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
-                        if not self.__encoding and not self.__no_save:
-                            self.__start_time_of_last_recording = datetime.datetime.now()
-                            self.log_info(f"Starting new recording: {self.__start_time_of_last_recording}")
-                            self.__start_recording()
+                        if not self.__encoding:
+                            if not self.__no_save:
+                                self.__start_time_of_last_recording = datetime.datetime.now()
+                                self.log_info(f"Starting new recording: {self.__start_time_of_last_recording}")
+                                self.__start_recording()
                         self.__time_of_last_motion_detection = datetime.datetime.now()
                         self.log_movement_start(f"Motion Detected - Diff: {hist_diff}")
                     elif self.__is_max_recording_length_exceeded() and not self.__no_save:
@@ -189,10 +190,13 @@ class MotionDetector:
                             f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
                         self.__write_recording_to_file()
                     else:
-                        self.log_movement_end(f"Motion No-Longer Detected - Diff: {hist_diff}")
                         if self.__is_max_time_since_last_motion_detection_exceeded() and not self.__no_save:
-                            self.log_info("Max time since last motion detection exceeded")
-                            self.__write_recording_to_file()
+                            if not self.__no_save:
+                                self.log_info("Max time since last motion detection exceeded")
+                                self.__write_recording_to_file()
+                            else:
+                                self.log_movement_end(f"Motion No-Longer Detected - Diff: {hist_diff}")
+
                 previous_frame = current_frame
             except Exception as e:
                 self.log_error(f"An error occurred in the motion detection loop: {e}")
