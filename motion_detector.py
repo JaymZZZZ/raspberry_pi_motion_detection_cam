@@ -11,12 +11,13 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
+import colorama
 from PIL import Image
 from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import CircularOutput
 
-from colorama import init as colorama_init
+from colorama import init as colorama_init, Back
 from colorama import Fore
 from colorama import Style
 
@@ -94,7 +95,7 @@ class MotionDetector:
         self.__encoding = False
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
-        self.__display_interval = 30
+        self.__display_interval = 100
         self.__tick = 0
 
         self.__diff_history = []
@@ -167,7 +168,7 @@ class MotionDetector:
                             self.log_info(f"Starting new recording: {self.__start_time_of_last_recording}")
                             self.__start_recording()
                         self.__time_of_last_motion_detection = datetime.datetime.now()
-                        self.log_info(f"Motion Detected - Diff: {hist_diff}")
+                        self.log_movement_start(f"Motion Detected - Diff: {hist_diff}")
                     elif self.__is_max_recording_length_exceeded():
                         self.log_info(
                             f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
@@ -175,6 +176,7 @@ class MotionDetector:
                     else:
                         if self.__is_max_time_since_last_motion_detection_exceeded():
                             self.log_info("Max time since last motion detection exceeded")
+                            self.log_movement_end(f"Motion No-Longer Detected - Diff: {hist_diff}")
                             self.__write_recording_to_file()
                 previous_frame = current_frame
             except Exception as e:
@@ -333,6 +335,11 @@ class MotionDetector:
 
     def log_debug_as_info(self, message):
         logging.info(f"{Fore.LIGHTBLUE_EX} {message} {Style.RESET_ALL}")
+
+    def log_movement_start(self, message):
+        logging.info(f"{Back.RED} {message} {Style.RESET_ALL}")
+    def log_movement_end(self, message):
+        logging.info(f"{Back.GREEN} {message} {Style.RESET_ALL}")
 
     def log_at_interval(self, message):
         if self.__tick == self.__display_interval:
