@@ -290,16 +290,16 @@ class MotionDetector:
         sys.exit(1)
 
     def log_debug(self, message):
-        logging.debug(Fore.LIGHTBLUE_EX, message, Style.RESET_ALL)
+        logging.debug(f"{Fore.LIGHTBLUE_EX} {message} {Style.RESET_ALL}")
 
     def log_info(self, message):
-        logging.debug(Fore.LIGHTYELLOW_EX, message, Style.RESET_ALL)
+        logging.info(f"{Fore.LIGHTYELLOW_EX} {message} {Style.RESET_ALL}")
 
     def log_warning(self, message):
-        logging.debug(Fore.YELLOW, message, Style.RESET_ALL)
+        logging.warning(f"{Fore.YELLOW} {message} {Style.RESET_ALL}")
 
     def log_error(self, message):
-        logging.debug(Fore.RED, message, Style.RESET_ALL)
+        logging.error(f"{Fore.RED} {message} {Style.RESET_ALL}")
 
 
 if __name__ == "__main__":
