@@ -108,6 +108,7 @@ class MotionDetector:
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
         self.__display_interval = 100
+        self.__stats_interval = 1000
         self.__tick = 0
 
         self.__diff_history = deque()
@@ -380,6 +381,13 @@ class MotionDetector:
         else:
             self.__tick += 1
 
+    def stats_at_interval(self, message):
+        if self.__tick == self.__stats_interval:
+                self.log_debug_as_info(message)
+                self.__tick = 0
+        else:
+            self.__tick += 1
+
     def display_diff_stats(self, diff):
         diff_sum = 0
         diff_last = 0
@@ -410,7 +418,7 @@ class MotionDetector:
                 events_last_hour += 1
             if time > datetime.timedelta(hours=24):
                 events_last_day += 1
-        self.log_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
+        self.stats_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
