@@ -429,7 +429,7 @@ class MotionDetector:
             self.__diff_history.pop()
         self.__diff_history.appendleft(diff)
         self.display_diff_stats(diff)
-        self.display_motion_event_stats()
+        self.display_motion_events()
 
 
 if __name__ == "__main__":
