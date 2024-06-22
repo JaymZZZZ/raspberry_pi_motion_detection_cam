@@ -52,7 +52,7 @@ def parse_command_line_arguments():
     parser.add_argument('--gain', type=float, default=1.0,
                         help='Analog Gain',
                         required=False)
-    parser.add_argument('--exposure-time', type=float, default=33000.0,
+    parser.add_argument('--exposure-time', type=int, default=33000,
                         help='Exposure time in milliseconds',
                         required=False)
     parser.add_argument('--width', type=int, default=1280, help='Camera resolution width for high resolution',
