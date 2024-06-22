@@ -16,6 +16,10 @@ from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import CircularOutput
 
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
+
 # setLevel(logging.WARNING) seems to have no impact
 logging.getLogger("picamera2").disabled = True
 
@@ -144,25 +148,25 @@ class MotionDetector:
                 current_frame = current_frame[:w * h].reshape(h, w)
                 if previous_frame is not None:
                     hist_diff = self.__calculate_histogram_difference(current_frame, previous_frame)
-                    logging.debug(f"Last Diff: {hist_diff}")
+                    self.log_debug(f"Last Diff: {hist_diff}")
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
                         if not self.__encoding:
                             self.__start_time_of_last_recording = datetime.datetime.now()
-                            logging.info(f"start recording of new recording: {self.__start_time_of_last_recording}")
+                            self.log_info(f"start recording of new recording: {self.__start_time_of_last_recording}")
                             self.__start_recording()
                         self.__time_of_last_motion_detection = datetime.datetime.now()
-                        logging.info(f"Motion Detected - Diff: {hist_diff}")
+                        self.log_info(f"Motion Detected - Diff: {hist_diff}")
                     elif self.__is_max_recording_length_exceeded():
-                        logging.info(
+                        self.log_info(
                             f"max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
                         self.__write_recording_to_file()
                     else:
                         if self.__is_max_time_since_last_motion_detection_exceeded():
-                            logging.info("max time since last motion detection exceeded")
+                            self.log_info("max time since last motion detection exceeded")
                             self.__write_recording_to_file()
                 previous_frame = current_frame
             except Exception as e:
-                logging.error(f"An error occurred in the motion detection loop: {e}")
+                self.log_error(f"An error occurred in the motion detection loop: {e}")
                 continue
 
     def __calculate_histogram_difference(self, current_frame, previous_frame):
@@ -194,7 +198,7 @@ class MotionDetector:
 
     def __write_recording_to_file(self):
         file_path = self.__get_recording_file_path()
-        logging.info(f"writing file {file_path}")
+        self.log_info(f"writing file {file_path}")
         self.__encoder.output.stop()
         _, file_name = os.path.split(file_path)
         self.__upload_file(file_path=file_path)
@@ -241,7 +245,7 @@ class MotionDetector:
         :param file_path: file to delete
         """
         if self.__delete_local_recordings:
-            logging.info(f"Deleting local recording {file_path}")
+            self.log_info(f"Deleting local recording {file_path}")
             os.remove(file_path)
 
     def __send_email(self, file_path):
@@ -265,9 +269,9 @@ class MotionDetector:
             with smtplib.SMTP_SSL(self.__smtp_server, self.__smtp_port, timeout=10) as server:
                 server.login(self.__email_username, self.__email_password)
                 server.sendmail(self.__email_username, self.__recipient, msg.as_string())
-                logging.info(f"Sent email with attachment {file_path}")
+                self.log_info(f"Sent email with attachment {file_path}")
         except (smtplib.SMTPException, socket.timeout) as e:
-            logging.error(f"Failed to send email with attachment {file_path}: {e}")
+            self.log_error(f"Failed to send email with attachment {file_path}: {e}")
 
     def __upload_file(self, file_path):
         """
@@ -284,6 +288,18 @@ class MotionDetector:
         """
         self.__picam2.stop_encoder()
         sys.exit(1)
+
+    def log_debug(self, message):
+        logging.debug(Fore.LIGHTBLUE_EX, message, Style.RESET_ALL)
+
+    def log_info(self, message):
+        logging.debug(Fore.LIGHTYELLOW_EX, message, Style.RESET_ALL)
+
+    def log_warning(self, message):
+        logging.debug(Fore.YELLOW, message, Style.RESET_ALL)
+
+    def log_error(self, message):
+        logging.debug(Fore.RED, message, Style.RESET_ALL)
 
 
 if __name__ == "__main__":
