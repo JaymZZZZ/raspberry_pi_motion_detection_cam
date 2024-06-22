@@ -16,6 +16,7 @@ from PIL import Image
 from picamera2 import Picamera2, Preview
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import CircularOutput
+from picamera2.controls import Controls
 
 from colorama import init as colorama_init, Back
 from colorama import Fore
@@ -254,6 +255,12 @@ class MotionDetector:
             main={"size": (self.__width, self.__height), "format": "RGB888"},
             lores={"size": self.__lsize, "format": "YUV420"})
         self.__picam2.configure(video_config)
+
+        ctrls = Controls(self.__picam2)
+        ctrls.AnalogueGain = 0.0
+        ctrls.ExposureTime = 33192
+        self.__picam2.set_controls(ctrls)
+        self.__picam2.set_controls({"AwbEnable": 0})
 
         if enable_preview:
             self.__picam2.start_preview(Preview.QT, x=self.__preview_x, y=self.__preview_y,
