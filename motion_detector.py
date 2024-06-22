@@ -110,6 +110,7 @@ class MotionDetector:
         self.__display_interval = 100
         self.__stats_interval = 1000
         self.__tick = 0
+        self.__stats_tick = 0
 
         self.__diff_history = deque()
         self.__diff_history_count = 1000
@@ -382,11 +383,11 @@ class MotionDetector:
             self.__tick += 1
 
     def stats_at_interval(self, message):
-        if self.__tick == self.__stats_interval:
+        if self.__stats_tick == self.__stats_interval:
                 self.log_debug_as_info(message)
-                self.__tick = 0
+                self.__stats_tick = 0
         else:
-            self.__tick += 1
+            self.__stats_tick += 1
 
     def display_diff_stats(self, diff):
         diff_sum = 0
