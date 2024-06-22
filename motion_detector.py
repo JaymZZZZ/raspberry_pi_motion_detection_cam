@@ -66,6 +66,9 @@ def parse_command_line_arguments():
                         required=False)
     parser.add_argument('--smtp-server', type=str, default='smtp.gmail.com', help='SMTP Server', required=False)
     parser.add_argument('--smtp-port', type=int, default=465, help='SMTP Port', required=False)
+    parser.add_argument('--debug',
+                        help='enables debug mode',
+                        required=False, action='debug_true')
 
     return parser.parse_args()
 
@@ -109,7 +112,13 @@ class MotionDetector:
 
         self.__set_up_camera(args.preview)
 
+        self.__debug_mode = args.debug
+
     def start(self):
+
+        if self.__debug_mode:
+            logging.basicConfig(level=logging.DEBUG)
+
         """
         Starts the camera and runs the loop.
         """
@@ -133,12 +142,14 @@ class MotionDetector:
                 current_frame = current_frame[:w * h].reshape(h, w)
                 if previous_frame is not None:
                     hist_diff = self.__calculate_histogram_difference(current_frame, previous_frame)
+                    logging.debug(f"Last Diff: {hist_diff}")
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
                         if not self.__encoding:
                             self.__start_time_of_last_recording = datetime.datetime.now()
                             logging.info(f"start recording of new recording: {self.__start_time_of_last_recording}")
                             self.__start_recording()
                         self.__time_of_last_motion_detection = datetime.datetime.now()
+                        logging.info(f"Motion Detected - Diff: {hist_diff}")
                     elif self.__is_max_recording_length_exceeded():
                         logging.info(
                             f"max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
