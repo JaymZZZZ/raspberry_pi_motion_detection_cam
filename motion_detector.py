@@ -108,9 +108,9 @@ class MotionDetector:
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
         self.__display_interval = 100
-        self.__stats_interval = 1000
+        self.__events_interval = 1000
         self.__tick = 0
-        self.__stats_tick = 0
+        self.__events_tick = 0
 
         self.__diff_history = deque()
         self.__diff_history_count = 1000
@@ -367,27 +367,30 @@ class MotionDetector:
     def log_error(self, message):
         logging.error(f"{Fore.RED} {message} {Style.RESET_ALL}")
 
-    def log_debug_as_info(self, message):
+    def log_stats(self, message):
         logging.info(f"{Fore.LIGHTBLUE_EX} {message} {Style.RESET_ALL}")
+
+    def log_events(self, message):
+        logging.info(f"{Fore.LIGHTCYAN_EX} {message} {Style.RESET_ALL}")
 
     def log_movement_start(self, message):
         logging.info(f"{Back.RED} {message} {Style.RESET_ALL}")
     def log_movement_end(self, message):
         logging.info(f"{Back.GREEN}{Fore.BLACK} {message} {Style.RESET_ALL}")
 
-    def log_at_interval(self, message):
+    def stats_at_interval(self, message):
         if self.__tick == self.__display_interval:
-                self.log_debug_as_info(message)
+                self.log_stats(message)
                 self.__tick = 0
         else:
             self.__tick += 1
 
-    def stats_at_interval(self, message):
-        if self.__stats_tick == self.__stats_interval:
-                self.log_debug_as_info(message)
-                self.__stats_tick = 0
+    def events_at_interval(self, message):
+        if self.__events_tick == self.__events_interval:
+                self.log_events(message)
+                self.__events_tick = 0
         else:
-            self.__stats_tick += 1
+            self.__events_tick += 1
 
     def display_diff_stats(self, diff):
         diff_sum = 0
@@ -404,9 +407,9 @@ class MotionDetector:
 
         iterations = len(self.__diff_history)
         self.__diff_average = diff_sum / len(self.__diff_history)
-        self.log_at_interval(f"Diff Stats ({iterations} iterations): NEWEST: {diff} | OLDEST: {diff_last} | AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
+        self.stats_at_interval(f"Diff Stats ({iterations} iterations): NEWEST: {diff} | OLDEST: {diff_last} | AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
 
-    def display_motion_event_stats(self):
+    def display_motion_events(self):
 
         events_last_10_min = 0
         events_last_hour = 0
@@ -419,7 +422,7 @@ class MotionDetector:
                 events_last_hour += 1
             if time > datetime.timedelta(hours=24):
                 events_last_day += 1
-        self.stats_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
+        self.events_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
