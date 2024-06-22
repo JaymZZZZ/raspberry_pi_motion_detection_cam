@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import argparse
 import datetime
+import time
 import logging
 import os
 import signal
@@ -191,7 +192,7 @@ class MotionDetector:
                                 self.__encoding = True
                         self.__time_of_last_motion_detection = datetime.datetime.now()
                         self.log_movement_start(f"Motion Detected - Diff: {hist_diff}")
-                        self.__motion_events.appendleft(self.__time_of_last_motion_detection)
+                        self.__motion_events.appendleft(time.time())
                     elif self.__is_max_recording_length_exceeded() and not self.__no_save:
                         self.log_info(
                             f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
@@ -416,11 +417,11 @@ class MotionDetector:
         events_last_day = 0
 
         for time in self.__motion_events:
-            if time > datetime.timedelta(minutes=10):
+            if time > (time.time() - 10 * 60):
                 events_last_10_min += 1
-            if time > datetime.timedelta(hours=1):
+            if time > (time.time() - 60 * 60):
                 events_last_hour += 1
-            if time > datetime.timedelta(hours=24):
+            if time > (time.time() - 24 * 60 * 60):
                 events_last_day += 1
         self.events_at_interval(f"Event Stats - 10 Min: {events_last_10_min} | 1 Hour: {events_last_hour} | 24 Hours: {events_last_day}")
 
