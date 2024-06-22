@@ -25,7 +25,7 @@ logging.getLogger("picamera2").disabled = True
 
 
 def command_line_handler(signum, frame):
-    res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+    res = input("Ctrl-C was pressed. Do you really want to exit? y/n ")
     if res == 'y':
         motion_detector.stop()
 
@@ -152,17 +152,17 @@ class MotionDetector:
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
                         if not self.__encoding:
                             self.__start_time_of_last_recording = datetime.datetime.now()
-                            self.log_info(f"start recording of new recording: {self.__start_time_of_last_recording}")
+                            self.log_info(f"Starting new recording: {self.__start_time_of_last_recording}")
                             self.__start_recording()
                         self.__time_of_last_motion_detection = datetime.datetime.now()
                         self.log_info(f"Motion Detected - Diff: {hist_diff}")
                     elif self.__is_max_recording_length_exceeded():
                         self.log_info(
-                            f"max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
+                            f"Max recording time exceeded after {(datetime.datetime.now() - self.__start_time_of_last_recording).total_seconds()} seconds")
                         self.__write_recording_to_file()
                     else:
                         if self.__is_max_time_since_last_motion_detection_exceeded():
-                            self.log_info("max time since last motion detection exceeded")
+                            self.log_info("Max time since last motion detection exceeded")
                             self.__write_recording_to_file()
                 previous_frame = current_frame
             except Exception as e:
@@ -198,7 +198,7 @@ class MotionDetector:
 
     def __write_recording_to_file(self):
         file_path = self.__get_recording_file_path()
-        self.log_info(f"writing file {file_path}")
+        self.log_info(f"Writing file {file_path}")
         self.__encoder.output.stop()
         _, file_name = os.path.split(file_path)
         self.__upload_file(file_path=file_path)
