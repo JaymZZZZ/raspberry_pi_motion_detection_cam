@@ -265,11 +265,11 @@ class MotionDetector:
         self.__picam2.configure(video_config)
 
         ctrls = Controls(self.__picam2)
-        ctrls.AnalogueGain = self.__gain
-        ctrls.ExposureTime = self.__exposure_time
+    #    ctrls.AnalogueGain = self.__gain
+    #    ctrls.ExposureTime = self.__exposure_time
         ctrls.AwbEnable = 0
-    #   ctrls.AeEnable = 1
-    #    self.__picam2.set_controls(ctrls)
+        ctrls.AeEnable = 1
+        self.__picam2.set_controls(ctrls)
 
         if enable_preview:
             self.__picam2.start_preview(Preview.QT, x=self.__preview_x, y=self.__preview_y,
