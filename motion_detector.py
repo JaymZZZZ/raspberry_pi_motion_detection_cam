@@ -95,7 +95,13 @@ class MotionDetector:
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
         self.__display_interval = 10
-        self.__tick = 0
+        self.__tick =
+
+        self.__diff_history = []
+        self.__diff_history_count = 100
+        self.__diff_min = 9999
+        self.__diff_max = 0
+        self.__diff_average = 0
 
         self.__zoom_factor = args.zoom
         self.__lores_width = args.lores_width
@@ -154,7 +160,7 @@ class MotionDetector:
                 current_frame = current_frame[:w * h].reshape(h, w)
                 if previous_frame is not None:
                     hist_diff = self.__calculate_histogram_difference(current_frame, previous_frame)
-                    self.log_at_interval(f"Last Diff: {hist_diff}")
+                    self.store_diff_history(hist_diff)
                     if hist_diff > self.__min_pixel_diff and not self.__is_max_recording_length_exceeded() and not self.__encoding:
                         if not self.__encoding:
                             self.__start_time_of_last_recording = datetime.datetime.now()
@@ -331,6 +337,29 @@ class MotionDetector:
                 self.__tick = 0
         else:
             self.__tick += 1
+
+    def display_diff_stats(self):
+        diff_sum = 0
+        for value in self.__diff_history:
+            if value < self.__diff_min:
+                self.__diff_min = value
+            if value > self.__diff_max:
+                self.__diff_max = value
+            diff_sum += value
+
+        self.__diff_average = diff_sum / len(self.__diff_history)
+        self.log_at_interval(f"Diff Stats ({self.__diff_history_count} iterations): AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
+
+    def store_diff_history(self, diff):
+        if len(self.__diff_history) == self.__diff_history_count:
+            new_diff_history = []
+            for key, value in self.__diff_history:
+                if 1 <= key <= self.__diff_history_count - 1:
+                    new_diff_history.append(value)
+            self.__diff_history = new_diff_history
+        else:
+            self.__diff_history.append(diff)
+        self.display_diff_stats()
 
 
 if __name__ == "__main__":
