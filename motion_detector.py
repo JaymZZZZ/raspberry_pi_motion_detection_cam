@@ -416,12 +416,12 @@ class MotionDetector:
         events_last_hour = 0
         events_last_day = 0
 
-        for time in self.__motion_events:
-            if time > (time.time() - 10 * 60):
+        for event in self.__motion_events:
+            if event > (time.time() - 10 * 60):
                 events_last_10_min += 1
-            if time > (time.time() - 60 * 60):
+            if event > (time.time() - 60 * 60):
                 events_last_hour += 1
-            if time > (time.time() - 24 * 60 * 60):
+            if event > (time.time() - 24 * 60 * 60):
                 events_last_day += 1
         self.events_at_interval(f"Event Stats - (10 Min / 1 Hour / 1 Day) : {events_last_10_min} | {events_last_hour} | {events_last_day}")
 
