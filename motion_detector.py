@@ -95,7 +95,7 @@ class MotionDetector:
         self.__start_time_of_last_recording = None
         self.__time_of_last_motion_detection = None
         self.__display_interval = 10
-        self.__tick =
+        self.__tick = 0
 
         self.__diff_history = []
         self.__diff_history_count = 100
