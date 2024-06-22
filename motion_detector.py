@@ -348,8 +348,9 @@ class MotionDetector:
         else:
             self.__tick += 1
 
-    def display_diff_stats(self):
+    def display_diff_stats(self, diff):
         diff_sum = 0
+        diff_last = 0
         self.__diff_min = 9999
         self.__diff_max = 0
         for value in self.__diff_history:
@@ -358,13 +359,14 @@ class MotionDetector:
             if value > self.__diff_max:
                 self.__diff_max = value
             diff_sum += value
+            diff_last = value
 
         iterations = len(self.__diff_history)
         self.__diff_average = diff_sum / len(self.__diff_history)
-        self.log_at_interval(f"Diff Stats ({iterations} iterations): AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
+        self.log_at_interval(f"Diff Stats ({iterations} iterations): NEWEST: {diff} | OLDEST: {diff_last} | AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
 
     def store_diff_history(self, diff):
-        if len(self.__diff_history) == self.__diff_history_count:
+        if len(self.__diff_history) >= self.__diff_history_count:
             new_diff_history = [diff]
             pos = 0
             for value in self.__diff_history:
@@ -377,7 +379,7 @@ class MotionDetector:
             new_diff_history.clear()
         else:
             self.__diff_history.append(diff)
-        self.display_diff_stats()
+        self.display_diff_stats(diff)
 
 
 if __name__ == "__main__":
