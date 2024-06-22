@@ -1,2 +1,4 @@
 numpy==1.*
-Pillow=9.*
+Pillow==9.*
+colorama==0.*
+picamera2==0.*
