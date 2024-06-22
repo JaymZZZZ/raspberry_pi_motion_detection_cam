@@ -359,8 +359,9 @@ class MotionDetector:
                 self.__diff_max = value
             diff_sum += value
 
+        iterations = len(self.__diff_history)
         self.__diff_average = diff_sum / len(self.__diff_history)
-        self.log_at_interval(f"Diff Stats ({self.__diff_history_count} iterations): AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
+        self.log_at_interval(f"Diff Stats ({iterations} iterations): AVG: {self.__diff_average} | MIN: {self.__diff_min} | MAX: {self.__diff_max}")
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) == self.__diff_history_count:
