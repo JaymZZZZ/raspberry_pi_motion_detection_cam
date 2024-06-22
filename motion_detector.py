@@ -377,7 +377,7 @@ class MotionDetector:
                 pos += 1
             new_diff_history.appendleft(diff)
             self.__diff_history.clear()
-            self.__diff_history.extendleft(range(new_diff_history))
+            self.__diff_history.extendleft(new_diff_history)
             new_diff_history.clear()
         else:
             self.__diff_history.appendleft(diff)
