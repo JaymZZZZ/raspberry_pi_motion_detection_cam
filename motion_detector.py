@@ -369,18 +369,8 @@ class MotionDetector:
 
     def store_diff_history(self, diff):
         if len(self.__diff_history) >= self.__diff_history_count:
-            new_diff_history = deque()
-            pos = 0
-            for value in self.__diff_history:
-                if 1 <= pos <= self.__diff_history_count - 1:
-                    new_diff_history.appendleft(value)
-                pos += 1
-            new_diff_history.appendleft(diff)
-            self.__diff_history.clear()
-            self.__diff_history = new_diff_history
-            new_diff_history.clear()
-        else:
-            self.__diff_history.appendleft(diff)
+            self.__diff_history.pop()
+        self.__diff_history.appendleft(diff)
         self.display_diff_stats(diff)
 
 
